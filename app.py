@@ -8,7 +8,7 @@ from nodes import (
 )
 
 st.set_page_config(
-    page_title="AI Email Writing Trainer",
+    page_title="Dr. Email - TCS Email Writing Practice",
     page_icon="📧",
     layout="wide"
 )
@@ -454,12 +454,12 @@ with right:
 # FOOTER
 # -----------------------------
 
-st.markdown(
-    """
-    <hr>
-    <div class='footer'>
-        🚀 Developed by <b>Etyala Rahul</b>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     """
+#     <hr>
+#     <div class='footer'>
+#         🚀 Developed by <b>Etyala Rahul</b>
+#     </div>
+#     """,
+#     unsafe_allow_html=True
+# )
