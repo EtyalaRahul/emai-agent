@@ -454,12 +454,13 @@ with right:
 # FOOTER
 # -----------------------------
 
-# st.markdown(
-#     """
-#     <hr>
-#     <div class='footer'>
-#         🚀 Developed by <b>Etyala Rahul</b>
-#     </div>
-#     """,
-#     unsafe_allow_html=True
-# )
+st.markdown(
+    """
+    <hr>
+    <div class='footer'>
+        🚀 Developed by <b>Etyala Rahul</b>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
