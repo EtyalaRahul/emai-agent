@@ -1,49 +1,54 @@
 QUESTION_PROMPT = """
-You are an expert TCS NQT/NextStep placement communication trainer with 10+ years of experience \
-coaching candidates for TCS assessments.
+You are a TCS NQT/NextStep email writing question generator.
 
-Generate ONE original email writing question that precisely matches TCS assessment style and difficulty.
+Generate ONE original email writing question that precisely matches TCS assessment style shown in official samples.
 
-SCENARIO RULES:
-- Write a 2-3 sentence scenario giving the candidate full context (situation, urgency, relationship)
-- The role and recipient must be specific job titles, not generic labels
-  GOOD: "Project Lead at Infosys" writing to "Client Manager at Deutsche Bank"
-  BAD: "employee" writing to "boss"
-- Cover one of these corporate situations (vary each call):
-  project delay / HR announcement / client complaint / vendor negotiation /
-  delegation visit / training request / appreciation / service issue /
-  relocation / incident report
+QUESTION FORMAT (follow this exactly):
+- Start with a 1-2 sentence situation describing WHO the candidate is and WHAT they need to write about
+- Keep roles natural and relatable: "your boss", "your client", "your HR head", "your team member", "the manager of [Company]", "your professor"
+- The situation should feel real and everyday — not overly corporate or technical
 
-PHRASE RULES (CRITICAL):
-- Generate exactly 6 to 8 mandatory phrases
-- Each phrase must be 2 to 5 words
-- No single words
-- No full sentences
-- Every phrase must encode a specific fact or action the candidate must include
+GOOD QUESTION EXAMPLES:
+"Write an email to your client explaining that there will be a delay in your project."
+"Write an email to your HR head, recommending a friend for a vacant post."
+"You are the director of a Pharma company. Write an email to your office manager asking them to make arrangements for a foreign delegation visit."
+"Write an email to your team member appreciating his hard work which resulted in completion of the team project on time."
 
-GOOD:
-"unexpected power outage"
-"rescheduled to Friday"
-"sincerely apologize for"
-"attached revised timeline"
-"mandatory attendance required"
-"two-week extension"
+BAD QUESTION EXAMPLES:
+"You are a Senior Delivery Manager at Wipro Technologies. Compose a professional email to the Head of Digital Transformation at HSBC..."
+"As a Project Lead at Infosys, write to the Client Manager at Deutsche Bank regarding..."
 
-BAD:
-"please note"
-"very important"
-"as discussed"
-"thank you"
+SITUATION TYPES (vary each call):
+project delay / HR announcement / client complaint / vendor issue /
+delegation visit / training request / appreciation / service complaint /
+office relocation / meeting reschedule / product enquiry / timesheet reminder /
+internship update / sponsorship request / reference/recommendation
 
-- Phrases must collectively cover:
-  • problem/situation
-  • cause
-  • impact
-  • action/resolution
-  • appropriate tone
+PHRASE RULES (CRITICAL — match PDF style):
+- Generate exactly 8 to 12 phrases
+- Phrases are SHORT fragments separated by dashes, just like in official TCS samples
+- Mix of single meaningful words AND short 2-3 word fragments
+- They encode specific facts: WHO, WHAT, WHY, WHEN, RESOLUTION
+
+GOOD PHRASE EXAMPLES (from official samples):
+"project delivery – delayed – key team member – sick – food poisoning – last minute – unexpected – trying – substitute – required skill set – lost time – delay of one week – apologies"
+"floor manager – appointed – start work next Monday – comes with 10 years of work experience – good track record – top companies – Indian and International – good addition – team – welcome"
+"CRM project – this week delivery – unexpected server crash – late for delivery – emergency – mode action plan executed – team hard work – late night – delivered service – on time – clients pleased – quality"
+
+BAD PHRASE EXAMPLES:
+"unexpected power outage has occurred"
+"sincerely apologize for the inconvenience caused"
+"mandatory attendance is required for all staff"
+
+- Phrases must collectively hint at:
+  • the situation/problem
+  • cause or background
+  • impact or urgency
+  • action or resolution
+  • tone (apology / appreciation / request)
 
 WORD COUNT:
-Set min_words between 75 and 100 based on scenario complexity.
+Set min_words between 50 and 70 (matching official TCS sample requirements).
 
 OUTPUT RULES:
 - Return ONLY raw valid JSON
@@ -54,18 +59,20 @@ OUTPUT RULES:
 
 JSON format:
 {{
-    "scenario": "Full scenario",
-    "role": "Specific sender title and company",
-    "recipient": "Specific recipient name, title, and company",
+    "scenario": "Full question as it would appear on the TCS assessment",
+    "role": "Who the candidate is (e.g. 'yourself', 'a project lead', 'the director')",
+    "recipient": "Who they are writing to (e.g. 'your boss', 'the client', 'your HR head')",
     "phrases": [
         "phrase one",
         "phrase two",
         "phrase three",
         "phrase four",
         "phrase five",
-        "phrase six"
+        "phrase six",
+        "phrase seven",
+        "phrase eight"
     ],
-    "min_words": 80
+    "min_words": 60
 }}
 """
 
@@ -119,19 +126,18 @@ Apply deductions:
 - Exclamation marks: -1 each (max -3)
 
 4. MANDATORY PHRASES (0–20)
-Each phrase receives equal weight.
+The phrases in TCS questions are short fragments (single words or 2-3 word chunks).
+A phrase is "used" when the candidate naturally incorporates the word/fragment into their email.
 
-Full marks:
-- Phrase appears
-- Used naturally
-- Grammatically correct
+Full marks per phrase:
+- The word or fragment appears in the email
+- Used in a natural, grammatically correct sentence
 
-Half marks:
-- Phrase appears
-- Usage awkward
+Half marks per phrase:
+- The word or fragment appears but usage is awkward or forced
 
 Zero:
-- Phrase absent
+- The word or fragment is completely absent
 
 Additional deduction:
 -3 if below minimum word count
@@ -164,7 +170,7 @@ Each suggestion must:
 - Be prioritised
 
 MISSING PHRASES:
-List every phrase that is absent or incorrectly used.
+List every phrase/word that is absent or incorrectly used.
 
 Return ONLY raw valid JSON.
 
@@ -194,7 +200,7 @@ Your task is to write the ideal model-answer email for the following TCS NQT ema
 SCENARIO:
 {question}
 
-MANDATORY PHRASES:
+MANDATORY PHRASES/WORDS:
 {phrases}
 
 CANDIDATE EMAIL:
@@ -202,32 +208,39 @@ CANDIDATE EMAIL:
 
 REQUIREMENTS:
 
-1. Use a professional greeting appropriate to the recipient.
+1. Use a simple, appropriate greeting matching the TCS sample style:
+   - "Dear Sir," / "Dear Ma'am," for superiors
+   - "Dear All," for team/group emails
+   - "Dear [Name]," when a name is given
+   - "Mr. [Name]," for formal external recipients
 
 2. State the purpose of the email in the very first sentence.
 
-3. Include all {phrase_count} mandatory phrases exactly as provided.
+3. Naturally incorporate all {phrase_count} mandatory words/phrases.
+   Note: These are short fragments — weave them into sentences naturally, do not force them in awkwardly.
 
 4. Organise the email into short paragraphs:
    - Paragraph 1: Purpose/Situation
    - Paragraph 2: Cause/Background
    - Paragraph 3: Resolution/Next Steps
-   - Paragraph 4 (Optional): Appreciation/Reassurance
+   - Paragraph 4 (Optional): Appreciation/Reassurance/Request
 
 5. Keep every sentence under 30 words.
 
-6. Maintain a professional, formal and polite tone.
+6. Maintain a professional yet warm and natural tone — not robotic or overly formal.
 
-7. End with:
+7. End with one of:
    Thanks & Regards,
    [Your Name]
-   or
+
+   OR
+
    Regards,
    [Your Name]
 
 8. Ensure the email comfortably exceeds the required minimum word count.
 
-9. Make the email realistic and natural, not robotic.
+9. Match the natural, readable style of official TCS sample answers — simple vocabulary, clear sentences, no jargon.
 
 Return ONLY the final email text.
 No markdown.
