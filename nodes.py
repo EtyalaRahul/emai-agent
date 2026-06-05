@@ -69,12 +69,20 @@ def evaluate_email(state):
         state["api_key"]
     )
 
+    email_text = state["email"]
+
+    wordcount = len(
+        email_text.split()
+    )
+
     prompt = EVALUATION_PROMPT.format(
         question=state["question"]["scenario"],
         phrases=", ".join(
             state["question"]["phrases"]
         ),
-        email=state["email"]
+        email=email_text,
+        wordcount=wordcount,
+        minwords=state["question"]["min_words"]
     )
 
     response = llm.invoke(
@@ -98,6 +106,12 @@ def improve_email(state):
 
     prompt = IMPROVE_PROMPT.format(
         question=state["question"]["scenario"],
+        phrases=", ".join(
+            state["question"]["phrases"]
+        ),
+        phrase_count=len(
+            state["question"]["phrases"]
+        ),
         email=state["email"]
     )
 
